@@ -72,8 +72,8 @@ import verushash as vh
 
 vh.initialize()
 byte_ary = vh.verushash()
-byte_ary = vh.verushash_V2()
-byte_ary = vh.verushash_V2b()
+byte_ary = vh.verushash_v2()
+byte_ary = vh.verushash_v2b()
 byte_ary = vh.verushash_v2b1()
 
 ```

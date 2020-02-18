@@ -10,10 +10,6 @@
 
 namespace py = pybind11;
 
-CVerusHash* vh;
-CVerusHashV2* vh2;
-CVerusHashV2* vh2b1;
-
 bool initialized = false;
 
 void initialize()
@@ -23,11 +19,6 @@ void initialize()
         CVerusHash::init();
         CVerusHashV2::init();
     }
-    
-    vh = new CVerusHash();
-    vh2 = new CVerusHashV2(SOLUTION_VERUSHHASH_V2);
-    vh2b1 = new CVerusHashV2(SOLUTION_VERUSHHASH_V2_1);
-    
     initialized = true;
 }
 
@@ -42,41 +33,44 @@ py::bytes verushash(const std::string bytes) {
 }
 
 py::bytes verushash_v2(const std::string bytes) {
+    CVerusHashV2 vh2(SOLUTION_VERUSHHASH_V2);
     unsigned char *result = new unsigned char[32];
     
     if (initialized == false) {
         initialize();
     }
 
-    vh2->Reset();
-    vh2->Write((const unsigned char *)bytes.data(), bytes.size());
-    vh2->Finalize(result);
+    vh2.Reset();
+    vh2.Write((const unsigned char *)bytes.data(), bytes.size());
+    vh2.Finalize(result);
     return py::bytes((char *)result, 32);
 }
 
 py::bytes verushash_v2b(const std::string bytes) {
+    CVerusHashV2 vh2(SOLUTION_VERUSHHASH_V2);
     unsigned char *result = new unsigned char[32];
     
     if (initialized == false) {
         initialize();
     }
 
-    vh2->Reset();
-    vh2->Write((const unsigned char *)bytes.data(), bytes.size());
-    vh2->Finalize2b(result);
+    vh2.Reset();
+    vh2.Write((const unsigned char *)bytes.data(), bytes.size());
+    vh2.Finalize2b(result);
     return py::bytes((char *)result, 32);
 }
 
 py::bytes verushash_v2b1(const std::string bytes) {
+    CVerusHashV2 vh2b1(SOLUTION_VERUSHHASH_V2_1);
     unsigned char *result = new unsigned char[32];
     
     if (initialized == false) {
         initialize();
     }
 
-    vh2b1->Reset();
-    vh2b1->Write((const unsigned char *)bytes.data(), bytes.size());
-    vh2b1->Finalize2b(result);
+    vh2b1.Reset();
+    vh2b1.Write((const unsigned char *)bytes.data(), bytes.size());
+    vh2b1.Finalize2b(result);
     return py::bytes((char *)result, 32);
 }
 

@@ -74,6 +74,20 @@ py::bytes verushash_v2b1(const std::string bytes) {
     return py::bytes((char *)result, 32);
 }
 
+py::bytes verushash_v2b2(const std::string bytes) {
+    CVerusHashV2 vh2b2(SOLUTION_VERUSHHASH_V2_2);
+    unsigned char *result = new unsigned char[32];
+
+    if (initialized == false) {
+        initialize();
+    }
+
+    vh2b2.Reset();
+    vh2b2.Write((const unsigned char *)bytes.data(), bytes.size());
+    vh2b2.Finalize2b(result);
+    return py::bytes((char *)result, 32);
+}
+
 namespace py = pybind11;
 
 PYBIND11_MODULE(verushash, m) {
@@ -91,6 +105,7 @@ PYBIND11_MODULE(verushash, m) {
            verushash_v2
            verushash_v2b
            verushash_v2b1
+           verushash_v2b2
     )pbdoc";
 
     m.def("initialize", &initialize, R"pbdoc(
@@ -111,6 +126,10 @@ PYBIND11_MODULE(verushash, m) {
 
     m.def("verushash_v2b1", &verushash_v2b1, R"pbdoc(
         VerusHash V2b1, return 32 bytes as bytes result
+    )pbdoc");
+
+    m.def("verushash_v2b2", &verushash_v2b2, R"pbdoc(
+        VerusHash V2b2, return 32 bytes as bytes result
     )pbdoc");
 
 #ifdef VERSION_INFO

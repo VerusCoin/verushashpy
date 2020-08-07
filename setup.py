@@ -1,6 +1,7 @@
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import sys
+import glob
 import setuptools
 
 __version__ = '0.0.3'
@@ -46,7 +47,7 @@ ext_modules = [
             get_pybind_include(user=True)
         ],
         extra_objects=[
-            'libs/libsodium.so'
+            glob.glob('/usr/lib/**/libsodium.so*', recursive=True)[0]
         ],
         language='c++'
     ),

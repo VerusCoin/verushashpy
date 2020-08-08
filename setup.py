@@ -1,9 +1,10 @@
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
 import sys
+import glob
 import setuptools
 
-__version__ = '0.0.1'
+__version__ = '0.0.3'
 
 
 class get_pybind_include(object):
@@ -24,18 +25,29 @@ class get_pybind_include(object):
 ext_modules = [
     Extension(
         'verushash',
-        ['src/crypto/haraka.c',
+        ['src/compat/glibc_compat.cpp',
+         'src/compat/glibc_sanity.cpp',
+         'src/compat/glibcxx_sanity.cpp',
+         'src/compat/strnlen.cpp',
+         'src/crypto/haraka.c',
          'src/crypto/haraka_portable.c',
+         'src/crypto/ripemd160.cpp',
+         'src/crypto/sha256.cpp',
          'src/crypto/uint256.cpp',
          'src/crypto/utilstrencodings.cpp',
          'src/crypto/verus_hash.cpp',
          'src/crypto/verus_clhash.cpp',
          'src/crypto/verus_clhash_portable.cpp',
+         'src/support/cleanse.cpp',
+         'src/blockhash.cpp',
          'src/main.cpp'],
         include_dirs=[
             # Path to pybind11 headers
             get_pybind_include(),
             get_pybind_include(user=True)
+        ],
+        extra_objects=[
+            glob.glob('/usr/lib/**/libsodium.so*', recursive=True)[0]
         ],
         language='c++'
     ),
@@ -80,7 +92,9 @@ class BuildExt(build_ext):
                  '-fPIC',
                  '-fexceptions',
                  '-Ofast',
-                 '-march=native'],
+                 '-march=native',
+                 '-Wno-reorder',
+                 '-g'],
     }
     l_opts = {
         'msvc': [],
@@ -117,10 +131,24 @@ setup(
     author_email='',
     url='https://github.com/miketout/verushashpy',
     description='Native Verus Hash module for Python',
-    long_description='A Verus Hash module supporting VerusHash 1.0 - 2.1, written in C++',
+    long_description='A Verus Hash module supporting VerusHash 1.0 - 2.2, written in C++',
     ext_modules=ext_modules,
     install_requires=['pybind11>=2.4'],
     setup_requires=['pybind11>=2.4'],
     cmdclass={'build_ext': BuildExt},
     zip_safe=False,
 )
+
+
+static_libraries = ['igraph']
+static_lib_dir = '/system/lib'
+libraries = ['z', 'xml2', 'gmp']
+library_dirs = ['/system/lib', '/system/lib64']
+
+if sys.platform == 'win32':
+    libraries.extend(static_libraries)
+    library_dirs.append(static_lib_dir)
+    extra_objects = []
+else: # POSIX
+    extra_objects = ['{}/lib{}.a'.format(static_lib_dir, l) for l in static_libraries]
+

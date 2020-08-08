@@ -75,5 +75,6 @@ byte_ary = vh.verushash()
 byte_ary = vh.verushash_v2()
 byte_ary = vh.verushash_v2b()
 byte_ary = vh.verushash_v2b1()
+byte_ary = vh.verushash_v2b2()
 
 ```

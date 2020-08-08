@@ -6,7 +6,10 @@
 #include <vector>
 
 #include "crypto/verus_hash.h"
+#include "solutiondata.h"
 #include <pybind11/pybind11.h>
+
+#include <sstream>
 
 namespace py = pybind11;
 
@@ -18,6 +21,7 @@ void initialize()
     {
         CVerusHash::init();
         CVerusHashV2::init();
+        sodium_init();
     }
     initialized = true;
 }
@@ -74,18 +78,27 @@ py::bytes verushash_v2b1(const std::string bytes) {
     return py::bytes((char *)result, 32);
 }
 
-py::bytes verushash_v2b2(const std::string bytes) {
-    CVerusHashV2 vh2b2(SOLUTION_VERUSHHASH_V2_2);
-    unsigned char *result = new unsigned char[32];
+py::bytes verushash_v2b2(const std::string bytes)
+{
+    uint256 result;
 
     if (initialized == false) {
         initialize();
     }
 
-    vh2b2.Reset();
-    vh2b2.Write((const unsigned char *)bytes.data(), bytes.size());
-    vh2b2.Finalize2b(result);
-    return py::bytes((char *)result, 32);
+    CBlockHeader bh;
+    CDataStream s(bytes.data(), bytes.data() + bytes.size(), SER_GETHASH, 0);
+
+    try
+    {
+        s >> bh;
+        result = bh.GetVerusV2Hash();
+    }
+    catch(const std::exception& e)
+    {
+    }
+
+    return py::bytes((char *)&result, 32);
 }
 
 namespace py = pybind11;

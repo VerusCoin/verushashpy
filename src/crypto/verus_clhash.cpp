@@ -709,7 +709,6 @@ __m128i __verusclmulwithoutreduction64alignedrepeat_sv2_1(__m128i *randomsource,
             case 0x18:
             {
                 const __m128i *buftmp = pbuf - (((selector & 1) << 1) - 1);
-                __m128i tmp; // used by MIX2
 
                 uint64_t rounds = selector >> 61; // loop randomly between 1 and 8 times
                 __m128i *rc = prand;
@@ -992,7 +991,6 @@ __m128i __verusclmulwithoutreduction64alignedrepeat_sv2_2(__m128i *randomsource,
             case 0x18:
             {
                 const __m128i *buftmp = pbuf - (((selector & 1) << 1) - 1);
-                __m128i tmp; // used by MIX2
 
                 uint64_t rounds = selector >> 61; // loop randomly between 1 and 8 times
                 __m128i *rc = prand;

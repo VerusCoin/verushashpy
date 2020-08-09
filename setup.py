@@ -21,6 +21,19 @@ class get_pybind_include(object):
         import pybind11
         return pybind11.get_include(self.user)
 
+def get_libsodium_path(libsodiumver='libsodium.so.23'):
+    '''
+    Function to find the path to the requisite libsodium library.
+
+    Version can be specified as desired, defaults to 23 (e.g. - looks for libsodium.so.23)
+    '''
+    paths = glob.glob('/usr/lib/**/{:s}'.format(libsodiumver), recursive=True)
+    if len(paths) == 0:
+        print("ERROR: Please install libsodium == {:s}".format(libsodiumver))
+        sys.exit(1)
+    else:
+        return paths[0]
+
 
 ext_modules = [
     Extension(
@@ -47,7 +60,7 @@ ext_modules = [
             get_pybind_include(user=True)
         ],
         extra_objects=[
-            glob.glob('/usr/lib/**/libsodium.so*', recursive=True)[0]
+            get_libsodium_path()
         ],
         language='c++'
     ),
